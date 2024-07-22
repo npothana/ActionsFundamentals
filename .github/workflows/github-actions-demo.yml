@@ -1,0 +1,35 @@
+name: GitHub Actions Demo
+run-name: |
+  ${{ github.event.schedule=='15 06 * * 0' && 'PurpleFields Weekly Regression Suite' ||
+      'PurpleFields Smoke Test Suite' }}
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - .github/**
+  pull_request:
+    branches:
+      - main
+  schedule:
+    # At 6:15 on every sunday UTC.
+    - cron: '15 06 * * 0'
+jobs:
+  Build:
+    name: Build PurpleFields Docker Container Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Branch name
+        run: echo running on branch ${GITHUB_REF##*/}
+      - name: Event name
+        run: |
+          echo "event name is:" ${{ github.event_name }}  
+          echo "event type is:" ${{ github.event.action }} 
+      - name: List files
+        id: files
+        run: |
+          echo "The repository ${{ github.repository }} contains the following files:"
+          tree
